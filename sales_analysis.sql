@@ -1,0 +1,139 @@
+
+CREATE DATABASE sales_analysis;
+
+USE sales_analysis;
+
+
+CREATE TABLE sales_data (
+    ORDERNUMBER INT,
+    QUANTITYORDERED INT,
+    PRICEEACH DECIMAL(10,2),
+    ORDERLINENUMBER INT,
+    SALES DECIMAL(12,2),
+    ORDERDATE VARCHAR(30),
+    STATUS VARCHAR(30),
+    QTR_ID INT,
+    MONTH_ID INT,
+    YEAR_ID INT,
+    PRODUCTLINE VARCHAR(100),
+    MSRP DECIMAL(10,2),
+    PRODUCTCODE VARCHAR(30),
+    CUSTOMERNAME VARCHAR(150),
+    PHONE VARCHAR(50),
+    ADDRESSLINE1 VARCHAR(150),
+    ADDRESSLINE2 VARCHAR(150),
+    CITY VARCHAR(100),
+    STATE VARCHAR(100),
+    POSTALCODE VARCHAR(20),
+    COUNTRY VARCHAR(100),
+    TERRITORY VARCHAR(100),
+    CONTACTLASTNAME VARCHAR(100),
+    CONTACTFIRSTNAME VARCHAR(100),
+    DEALSIZE VARCHAR(30)
+);
+
+
+SHOW VARIABLES LIKE 'local_infile';
+
+
+SET GLOBAL local_infile = 1;
+
+SHOW VARIABLES LIKE 'local_infile';
+
+
+USE sales_analysis;
+
+SELECT COUNT(*) AS total_records
+FROM sales_data;
+
+SELECT *
+FROM sales_data
+LIMIT 10;
+
+SELECT
+    PRODUCTLINE,
+    ROUND(SUM(SALES), 2) AS total_sales
+FROM sales_data
+GROUP BY PRODUCTLINE
+ORDER BY total_sales DESC;
+
+
+SELECT
+    ROUND(SUM(SALES), 2) AS total_revenue,
+    SUM(QUANTITYORDERED) AS total_quantity,
+    COUNT(DISTINCT ORDERNUMBER) AS total_orders
+FROM sales_data;
+
+
+SELECT
+    COUNTRY,
+    ROUND(SUM(SALES), 2) AS total_sales
+FROM sales_data
+GROUP BY COUNTRY
+ORDER BY total_sales DESC;
+
+
+SELECT
+    DEALSIZE,
+    COUNT(*) AS order_lines,
+    ROUND(SUM(SALES), 2) AS total_sales
+FROM sales_data
+GROUP BY DEALSIZE
+ORDER BY total_sales DESC;
+
+
+SELECT ORDERDATE
+FROM sales_data
+LIMIT 10;
+
+
+SELECT
+    YEAR(STR_TO_DATE(ORDERDATE, '%m/%d/%Y')) AS sales_year,
+    MONTH(STR_TO_DATE(ORDERDATE, '%m/%d/%Y')) AS sales_month,
+    ROUND(SUM(SALES), 2) AS monthly_sales
+FROM sales_data
+GROUP BY
+    YEAR(STR_TO_DATE(ORDERDATE, '%m/%d/%Y')),
+    MONTH(STR_TO_DATE(ORDERDATE, '%m/%d/%Y'))
+ORDER BY sales_year, sales_month;
+
+
+USE sales_analysis;
+
+SELECT
+    CUSTOMERNAME,
+    ROUND(SUM(SALES), 2) AS total_sales,
+    SUM(QUANTITYORDERED) AS total_quantity,
+    COUNT(DISTINCT ORDERNUMBER) AS total_orders
+FROM sales_data
+GROUP BY CUSTOMERNAME
+ORDER BY total_sales DESC
+LIMIT 10;
+
+
+
+SELECT
+    PRODUCTCODE,
+    PRODUCTLINE,
+    SUM(QUANTITYORDERED) AS total_quantity,
+    ROUND(SUM(SALES), 2) AS total_sales
+FROM sales_data
+GROUP BY PRODUCTCODE, PRODUCTLINE
+ORDER BY total_sales DESC
+LIMIT 10;
+
+
+SELECT
+    COUNTRY,
+    ROUND(SUM(SALES), 2) AS total_sales
+FROM sales_data
+GROUP BY COUNTRY
+ORDER BY total_sales DESC;
+
+SELECT
+    DEALSIZE,
+    COUNT(*) AS order_lines,
+    ROUND(SUM(SALES), 2) AS total_sales
+FROM sales_data
+GROUP BY DEALSIZE
+ORDER BY total_sales DESC;
